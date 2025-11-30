@@ -1,0 +1,13 @@
+name: agat_env
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - biopython
+  - pysam
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - pyyaml
+  - pytest
