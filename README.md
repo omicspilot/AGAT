@@ -1,2 +1,2 @@
 # AGAT
-Another Genome Analysis Toolkit
+Advanced Genome Analysis Toolkit
