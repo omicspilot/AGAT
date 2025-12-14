@@ -8,27 +8,29 @@ import pytest
 from src.analysis import codon_freq_analysis
 
 TEST_FASTA = Path(__file__).parent / "test_data.fasta"
+DNA_SEQ1="ATGCCCCCCTACACCGTGGTGTACTTCCCCGTGAGAGGCAGATGCGCCGCCCTGAGAATGCTGCTGGCCGACCAGGGCCAGAGCTGGAAGGAGGAGGTGGTGACCGTGGAGACCTGGCAGGAGGGCAGCCTGAAGGCCAGCTGCCTGTACGGCCAGCTGCCCAAGTTCCAGGACGGCGACCTGACCCTGTACCAGAGCAACACCATCCTGAGACACCTGGGCAGAACCCTGGGCCTGTACGGCAAGGACCAGCAGGAGGCCGCCCTGGTGGACATGGTGAACGACGGCGTGGAGGACCTGAGATGCAAGTACATCAGCCTGATCTACACCAACTACGAGGCCGGCAAGGACGACTACGTGAAGGCCCTGCCCGGCCAGCTGAAGCCCTTCGAGACCCTGCTGAGCCAGAACCAGGGCGGCAAGACCTTCATCGTGGGCGACCAGATCAGCTTCGCCGACTACAACCTGCTGGACCTGCTGCTGATCCACGAGGTGCTGGCCCCCGGCTGCCTGGACGCCTTCCCCCTGCTGAGCGCCTACGTGGGCAGACTGAGCGCCAGACCCAAGCTGAAGGCCTTCCTGGCCAGCCCCGAGTACGTGAACCTGCCCATCAACGGCAACGGCAAGCAGTAG\n"
 
 def test_codon_freq_analysis():
     # Create a temporary FASTA file for testing
     with open(TEST_FASTA, "w") as f:
-        f.write(">seq1\nATGCGTACGTAG\n>seq2\nATGCGTACG")
+        f.write(f">seq1\n{DNA_SEQ1}")
 
+    num_codons_dna_seq1 = round(len(DNA_SEQ1) / 3)
+    num_unique_codons = len(set(DNA_SEQ1[i:i+3] for i in range(0, len(DNA_SEQ1) - 2, 3)))
+    print(num_codons_dna_seq1, num_unique_codons)
     # Run the analysis for non unique codon count
-    result = codon_freq_analysis(TEST_FASTA)
+    res, res_unique = codon_freq_analysis(TEST_FASTA)
+    print(res["ATG"])
+    print(res["CTG"])
+    print(res["TAG"])
 
     # Check results
-    assert result["ATG"] == 2 / 7
-    assert result["CGT"] == 2 / 7
-    assert result["TAG"] == 1 / 7
-    
-    # Run the analysis for non unique codon count
-    result = codon_freq_analysis(TEST_FASTA, unique=True)
-
-    # Check results
-    assert result["ATG"] == 2 / 4
-    assert result["CGT"] == 2 / 4
-    assert result["TAG"] == 1 / 4
+    assert res["ATG"] == 3 / num_codons_dna_seq1
+    assert "CGT" not in res
+    assert res["TAG"] == 1 / num_codons_dna_seq1
+    # unique counters
+    assert res_unique["ATG"] == 3 / num_unique_codons
+    assert res_unique["TAG"] == 1 / num_unique_codons
 
     # Clean up
     TEST_FASTA.unlink()
